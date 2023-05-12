@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const MysqlHandler = require("./mysql_handler.js");
-const {Layers} = require("@exygen/archimate-model");
+const {Layers} = require("packages/archimate-model");
 const isLocalStorage = false; // true pour utiliser localstorage, false pour utiliser mysql
 const classes = [];
 classes.push(...Object.values(Layers).filter((cls) => typeof cls === 'function'));
