@@ -1,0 +1,25 @@
+{
+  "name":            "@exygen/archimate-server",
+  "version":         "0.1.0",
+  "private":         true,
+  "scripts":         {
+	"_prebuild": "npm link @exygen/archimate-model",
+	"build":     "babel src -d dist",
+	"server":    "node src/server.js"
+  },
+  "dependencies":    {
+	"@exygen/archimate-model": "^1.0.0",
+	"body-parser":             "",
+	"core-js":                 "",
+	"cors":                    "",
+	"express":                 "",
+	"mysql":                   "",
+	"uuid":                    ""
+  },
+  "devDependencies": {
+	"eslint":    "",
+	"babel":     "",
+	"babel-cli": "",
+	"jsdom":     ""
+  }
+}

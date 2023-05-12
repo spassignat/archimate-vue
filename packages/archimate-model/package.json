@@ -1,0 +1,26 @@
+{
+  "name":            "@exygen/archimate-model",
+  "version":         "1.0.0",
+  "description":     "Archimate Model",
+  "main":            "dist/index.js",
+  "type":            "commonjs",
+  "scripts":         {
+	"_prebuild": "cd dist;npm link",
+	"build":     "webpack",
+	"build2":    "webpack --config webpack.config.cjs"
+  },
+  "dependencies":    {
+	"uuid": ""
+  },
+  "devDependencies": {
+	"@babel/core":       "",
+	"@babel/preset-env": "",
+	"babel-loader":      "",
+	"eslint":            "",
+	"path":              "",
+	"webpack-cli":       ""
+  },
+  "lib":             [
+	"es2017"
+  ]
+}
