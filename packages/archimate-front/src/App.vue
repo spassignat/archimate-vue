@@ -12,12 +12,7 @@
 	</div>
 </template>
 <script>
-import TechnologyLayer from "packages/archimate-model";
-import ApplicationLayer from "packages/archimate-model";
-import BusinessLayer from "packages/archimate-model";
-import ImplementationLayer from "packages/archimate-model";
-import MotivationLayer from "packages/archimate-model";
-import StrategyLayer from "packages/archimate-model";
+import { ApplicationLayer, BusinessLayer, ImplementationLayer, MotivationLayer, StrategyLayer, TechnologyLayer} from "@exygen/archimate-model";
 import ArchimateComponent from "./components/ArchimateComponent.vue";
 
 export default {
