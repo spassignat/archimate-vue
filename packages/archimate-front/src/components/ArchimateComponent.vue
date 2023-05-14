@@ -21,20 +21,21 @@
 					</template>
 				</el-table-column>
 			</el-table>
-			<el-button type="primary"  @click="onAddItem">Add Item
+			<el-button type="primary" @click="onAddItem">Add Item
 			</el-button>
 			<el-row>
 				<el-col v-for="(field, index) in fields" :key="index" :span="24 / columns">
 					<el-form-item :label="field">
-						<el-input v-model="formData[field]" :disabled="field.disabled"></el-input>
+						<el-input v-model="formData[field]" :disabled="field.disabled||field==='id'"></el-input>
 					</el-form-item>
 				</el-col>
 			</el-row>
 		</el-form>
-		<!--		<div class="text-center">-->
-		<!--			<el-button :disabled="isDisabled" :loading="isLoading" type="primary" @click="onSubmit">Save</el-button>-->
-		<!--			<el-button v-if="isUpdating" @click="cancelUpdate">Cancel</el-button>-->
-		<!--		</div>-->
+		<div class="text-center">
+			<el-button :disabled="isDisabled" :loading="isLoading" type="primary" @click="onSubmit">Save</el-button>
+			<el-button :disabled="isDisabled" :loading="isLoading" type="primary" @click="onRefresh">Load</el-button>
+			<el-button v-if="isUpdating" @click="cancelUpdate">Cancel</el-button>
+		</div>
 	</div>
 </template>
 <script>
@@ -45,6 +46,7 @@ export default {
 	props: {
 		apiUrl: String,
 		entityName: String,
+		context: String,
 		entity: Function,
 		fields: Array,
 		columns: Array
@@ -65,42 +67,42 @@ export default {
 	},
 	methods: {
 		handleDelete(index, data) {
-			try {
-				this.isDeleting = true;
-				axios.delete(`${this.apiUrl}/${this.cl}/${id}`);
-				this.entities = state.entities.filter((e) => e.id !== id);
-			} catch (err) {
+			this.isDeleting = true;
+			axios.delete(`${this.apiUrl}/${this.context}/${data.id}`).then(() => {
+				this.entities = this.entities.filter((e) => e.id !== data.id);
+			}).catch((err) => {
 				this.error = err;
-			} finally {
+			}).finally(() => {
 				this.isDeleting = false;
-			}
+			});
 		},
 		handleEdit(index, data) {
 			this.formData = data;
 		},
 		onSubmit() {
 		},
+		onRefresh() {
+			this.loadData();
+		},
 		handleSave(index, data) {
 			if (!data.id) {
-				try {
-					this.isCreating = true;
-					const response = axios.post(this.apiUrl, data);
-					this.entities.push(response.data);
-					this.selectedEntity = {};
-				} catch (err) {
-					this.error = err;
-				} finally {
+				this.isCreating = true;
+				axios.post(`${this.apiUrl}/${this.context}}`, this.selectedEntity).then(() => {
 					this.isCreating = false;
-				}
-			} else {
-				try {
-					this.isUpdating = true;
-					axios.put(`${this.apiUrl}/${state.selectedEntity.id}`, state.selectedEntity);
-				} catch (err) {
+				}).catch(err => {
 					this.error = err;
-				} finally {
+				}).finally(() => {
+					this.isCreating = false;
+				});
+			} else {
+				this.isUpdating = true;
+				axios.put(`${this.apiUrl}/${this.context}/${this.selectedEntity.id}`, this.selectedEntity).then(() => {
 					this.isUpdating = false;
-				}
+				}).catch(err => {
+					this.error = err;
+				}).finally(() => {
+					this.isUpdating = false;
+				});
 			}
 		},
 		onAddItem() {
@@ -108,15 +110,14 @@ export default {
 			this.entities.push(items);
 		},
 		loadData() {
-			try {
-				this.isLoading = true;
-				const response = axios.get(this.apiUrl);
-				this.entities = response.data;
-			} catch (err) {
+			this.isLoading = true;
+			axios.get(`${this.apiUrl}/${this.context}`).then(response => {
+				this.entities = response.data || [];
+			}).catch(err => {
 				this.error = err;
-			} finally {
+			}).finally(() => {
 				this.isLoading = false;
-			}
+			});
 		}
 	},
 	created() {

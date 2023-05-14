@@ -2,7 +2,7 @@
   "name":            "@exygen/archimate-model",
   "version":         "1.0.0",
   "description":     "Archimate Model",
-  "main":            "dist/index.js",
+  "exports":         "./dist/index.js",
   "type":            "module",
   "scripts":         {
 	"_prebuild": "cd dist;npm link",
@@ -22,5 +22,8 @@
   },
   "lib":             [
 	"es2017"
-  ]
+  ],
+  "engines":         {
+	"node": ">=14.16"
+  }
 }

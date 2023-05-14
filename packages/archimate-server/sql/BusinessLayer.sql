@@ -57,3 +57,11 @@ CREATE TABLE business_event
 	documentation VARCHAR(255),
 	event_type    VARCHAR(255)
 );
+
+CREATE TABLE business_object
+(
+	id            VARCHAR(36) NOT NULL,
+	name          VARCHAR(255),
+	documentation VARCHAR(255),
+	business_role    VARCHAR(255)
+);

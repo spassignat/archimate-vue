@@ -1,5 +1,5 @@
-import {ArchiMateElement} from "./Base.js"
-export class StrategyResource extends ArchiMateElement {
+const ArchiMateElement = require("./Base.js");
+class StrategyResource extends ArchiMateElement {
 	constructor(id,name, description, events, capabilities) {
 		super(id,name, description);
 		this.events = events;
@@ -7,14 +7,14 @@ export class StrategyResource extends ArchiMateElement {
 	}
 }
 
-export class StrategyCapability extends ArchiMateElement {
-	constructor(id,name, description, processes) {
+class StrategyCapability extends ArchiMateElement {
+	constructor(id,name, description, processes=[]) {
 		super(id,name, description);
 		this.processes = processes;
 	}
 }
 
-export class StrategyValueStream extends ArchiMateElement {
+class StrategyValueStream extends ArchiMateElement {
 	constructor(id,name, description, stages, flows) {
 		super(id,name, description);
 		this.stages = stages;
@@ -22,7 +22,7 @@ export class StrategyValueStream extends ArchiMateElement {
 	}
 }
 
-export class StrategyOutcome extends ArchiMateElement {
+class StrategyOutcome extends ArchiMateElement {
 	constructor(id,name, description, valueStreams, goals) {
 		super(id,name, description);
 		this.valueStreams = valueStreams;
@@ -30,9 +30,11 @@ export class StrategyOutcome extends ArchiMateElement {
 	}
 }
 
-export class StrategyGoal extends ArchiMateElement {
+class StrategyGoal extends ArchiMateElement {
 	constructor(id,name, description, outcomes) {
 		super(id,name, description);
 		this.outcomes = outcomes;
 	}
 }
+
+module.exports={StrategyCapability,StrategyGoal,StrategyOutcome,StrategyResource,StrategyValueStream}

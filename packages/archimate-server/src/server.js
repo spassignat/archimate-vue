@@ -1,16 +1,20 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const MysqlHandler = require("./mysql_handler.js");
-const {Layers} = require("packages/archimate-model");
+const handler = require("./mysql_handler.js");
+const Layers = require("./model/index.js");
 const isLocalStorage = false; // true pour utiliser localstorage, false pour utiliser mysql
 const classes = [];
 classes.push(...Object.values(Layers).filter((cls) => typeof cls === 'function'));
-const classTables = {};
+const tableToClass = {};
 classes.reduce((acc, val) => {
-	acc[val] = val;
+	acc[camelToSnake(val.name)] = val;
 	return acc;
-}, classTables);
+}, tableToClass);
+classes.forEach(cl => {
+	let tableName = camelToSnake(cl.name);
+	createStub(tableName).generateSqlSchema();
+});
 
 function camelToSnake(str) {
 	return str.replace(/[A-Z]/g, (letter, index) => {
@@ -26,15 +30,15 @@ function snakeToCamel(str) {
 
 /**
  *
- * @param className
+ * @param tableName
  * @returns {MysqlHandler}
  */
-function createStub(className) {
+function createStub(tableName) {
 	let stub;
 	if (isLocalStorage) {
 		// stub = new LocalStorageHandler(className);
 	} else {
-		stub = new MysqlHandler(className, camelToSnake, snakeToCamel);
+		stub = new handler.MysqlHandler(tableToClass[tableName], camelToSnake, snakeToCamel);
 	}
 	return stub;
 }
@@ -45,25 +49,25 @@ app.use(cors());
 const router = express.Router();
 router.get('/:table', async (req, res) => {
 	const table = req.params.table;
-	const result = await createStub(classTables[table]).findAll();
+	const result = await createStub(table).findAll();
 	res.send(result);
 });
 router.get('/:table/:id', async (req, res) => {
 	const table = req.params.table;
 	const id = req.params.id;
-	const result = await createStub(classTables[table]).findOneById(id);
+	const result = await createStub(table).findOneById(id);
 	res.send(result);
 });
 router.post('/:table', async (req, res) => {
 	const table = req.params.table;
 	const item = req.body;
-	const result = await createStub(classTables[table]).insertOne(item);
+	const result = await createStub(table).insertOne(item);
 	res.send(result);
 });
 router.delete('/:table/:id', async (req, res) => {
 	const table = req.params.table;
 	const id = req.params.id;
-	const result = await createStub(classTables[table]).deleteOneById(id);
+	const result = await createStub(table).deleteOneById(id);
 	res.send(result);
 });
 app.use('/api', router);

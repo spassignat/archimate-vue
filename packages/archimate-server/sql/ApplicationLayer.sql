@@ -14,6 +14,14 @@ CREATE TABLE application_component
 	data_objects  TEXT
 );
 
+CREATE TABLE application_interface
+(
+	id                    VARCHAR(36) PRIMARY KEY,
+	name                  VARCHAR(255),
+	documentation         TEXT,
+	communication_network VARCHAR(255)
+);
+
 CREATE TABLE application_interaction
 (
 	id            VARCHAR(36) PRIMARY KEY,
@@ -28,6 +36,19 @@ CREATE TABLE application_interaction
 	version       VARCHAR(255),
 	interactions  TEXT,
 	processes     TEXT
+);
+CREATE TABLE application_collaboration
+(
+	id                        VARCHAR(36) PRIMARY KEY,
+	name                      VARCHAR(255),
+	documentation             TEXT,
+	interaction_processEvents TEXT
+);
+CREATE TABLE application_function
+(
+	id            VARCHAR(36) PRIMARY KEY,
+	name          VARCHAR(255),
+	documentation TEXT
 );
 
 CREATE TABLE application_process

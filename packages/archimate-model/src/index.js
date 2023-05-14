@@ -6,4 +6,4 @@ import * as MotivationLayer from './model/MotivationLayer.js';
 import * as StrategyLayer from './model/StrategyLayer.js';
 import * as TechnologyLayer from './model/TechnologyLayer.js';
 
-export default {Common, ApplicationLayer, BusinessLayer, ImplementationLayer, MotivationLayer, StrategyLayer, TechnologyLayer};
+export  {Common, ApplicationLayer, BusinessLayer, ImplementationLayer, MotivationLayer, StrategyLayer, TechnologyLayer};

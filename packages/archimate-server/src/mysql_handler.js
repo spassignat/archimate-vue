@@ -1,76 +1,139 @@
-const mysql =require( 'mysql');
-const v4=require( 'uuid') ;
+const mysql = require('mysql');
+const uuid = require('uuid');
+const sequence = uuid.v4;
 
-const uuid=v4;
+function camelToSnake(str) {
+	return str.replace(/[A-Z]/g, (letter, index) => {
+		return index === 0 ? letter.toLowerCase() : `_${letter.toLowerCase()}`;
+	});
+}
+
+function snakeToCamel(str) {
+	return str.replace(/([-_]\w)/g, function (match) {
+		return match[1].toUpperCase();
+	});
+}
+
+var types = ['string', 'number'];
+var primaryKey = `id`;
 
 class MysqlHandler {
-	constructor(table, mapToDb, mapToObject) {
-		this.table = tableName;
+	constructor(classConstructor, mapToDb, mapToObject) {
+		this.classConstructor = classConstructor;
+		this.table = camelToSnake(classConstructor.name);
 		this.mapToDb = mapToDb;
 		this.mapToObject = mapToObject;
+		let data = new classConstructor();
+		this.fields = Object.keys(data).filter(k => types.includes(typeof data[k]));
 	}
-
-	insertOne(data) {
-		data['id']=  uuid();
-		let columns = Object.keys(data).join(', ').map(this.mapToDb);
-		let values = Object.values(data).map(value => {
-			if (typeof value === 'string') {
-				return `'${value}'`;
-			} else if (typeof value === 'number') {
-				return value;
-			} else if (value instanceof Date) {
-				return `'${value.toISOString()}'`;
+	generateSqlSchema() {
+		let obj = new this.classConstructor();
+		const columns = [];
+		this.fields.filter(f => f !== primaryKey).forEach(f => {
+			const col = this.mapToDb(f);
+			const type = getTypeString(obj[f]);
+			const columnDef = `${col} ${type}`;
+			columns.push(columnDef);
+		});
+		const columnsString = columns.join(', ');
+		const sql = `CREATE TABLE IF NOT EXISTS ${this.table}
+                     (
+                         ${primaryKey} VARCHAR(255) PRIMARY KEY,
+                         ${columnsString}
+                     );`;
+		MysqlHandler.connection.query(sql, (error, results) => {
+			console.info(sql);
+			if (error) {
+				console.error(error);
 			} else {
-				return null;
+				console.info(results);
 			}
-		}).join(', ');
-		const sql = `INSERT INTO ${this.table} (${columns}) VALUES (${values})`;
+		});
+	}
+	insertOne(data) {
+		data['id'] = sequence();
+		const columns = [];
+		const values = [];
+		this.fields.forEach(f => {
+			const col = this.mapToDb(f);
+			let value = data[f];
+			if (typeof value === 'string') {
+				value = `'${value}'`;
+			} else if (typeof value === 'number') {
+				value = value;
+			} else if (value instanceof Date) {
+				value = `'${value.toISOString()}'`;
+			} else {
+				value = 'NULL';
+			}
+			columns.push(col);
+			values.push(value);
+		});
+		const columnsString = columns.join(', ');
+		const valuesString = values.join(', ');
+		const sql = `INSERT INTO ${this.table} (${columnsString}) VALUES (${valuesString})`;
+		console.trace(sql);
 		return new Promise((resolve, reject) => {
 			MysqlHandler.connection.query(sql, (error, results) => {
+				console.info(sql);
 				if (error) {
+					console.error(error);
 					reject(error);
 				} else {
+					console.info(results);
 					resolve(data['id']);
 				}
 			});
 		});
 	}
-
 	updateOne(data) {
 		const id = data.id;
 		delete data.id;
-		const sets = Object.entries(data).map(([key, value]) => {
+		const sets = [];
+		this.fields.filter(f => f !== primaryKey).forEach(f => {
+			const col = this.mapToDb(f);
+			let value = data[f];
 			if (typeof value === 'string') {
-				return `${this.mapToDb(key)}='${value}'`;
+				sets.push(`${col}='${value}'`)
 			} else if (typeof value === 'number') {
-				return `${this.mapToDb(key)}=${value}`;
+				sets.push(`${col}=${value}`)
 			} else if (value instanceof Date) {
-				return `${this.mapToDb(key)}='${value.toISOString()}'`;
+				sets.push(`${col}='${value.toISOString()}'`)
 			} else {
-				return null;
+				sets.push(`${col}=NULL`)
 			}
-		}).filter(entry => entry !== null).join(', ');
-		const sql = `UPDATE ${this.table} SET ${sets} WHERE id=${id}`;
+		});
+		const sql = `UPDATE ${this.table} SET ${sets} WHERE id = '${id}'`;
+		console.trace(sql);
 		return new Promise((resolve, reject) => {
 			MysqlHandler.connection.query(sql, (error, results) => {
+				console.info(sql);
 				if (error) {
+					console.error(error);
 					reject(error);
 				} else {
+					console.info(results);
 					resolve(results.affectedRows > 0);
 				}
 			});
 		});
 	}
-
 	findOneById(id) {
-		const sql = `SELECT * FROM ${this.table} WHERE id=${id} LIMIT 1`;
+		const sql = `SELECT * FROM ${this.table} WHERE id = '${id}' LIMIT 1`;
+		console.trace(sql);
 		return new Promise((resolve, reject) => {
 			MysqlHandler.connection.query(sql, (error, results) => {
+				console.info(sql);
 				if (error) {
+					console.error(error);
 					reject(error);
 				} else {
+					console.info(results);
 					if (results) {
-						const updatedData = { ...results, id };
+						const updatedData = {
+							...results,
+							id
+						};
 						const transformedData = this.transformObjectKeys(updatedData, this.mapToObject);
 						resolve(transformedData);
 					} else {
@@ -80,34 +143,38 @@ class MysqlHandler {
 			});
 		});
 	}
-
 	findAll() {
 		const sql = `SELECT * FROM ${this.table}`;
+		console.trace(sql);
 		return new Promise((resolve, reject) => {
 			MysqlHandler.connection.query(sql, (error, results) => {
+				console.info(sql);
 				if (error) {
+					console.error(error);
 					reject(error);
 				} else {
+					console.info(results);
 					const transformedRows = results.map(row => this.transformObjectKeys(row, this.mapToObject));
 					resolve(transformedRows);
 				}
 			});
 		});
 	}
-
 	deleteOneById(id) {
-		const sql = `DELETE FROM ${this.table} WHERE id=${id}`;
+		const sql = `DELETE FROM ${this.table} WHERE id = '${id}'`;
 		return new Promise((resolve, reject) => {
 			MysqlHandler.connection.query(sql, (error, results) => {
+				console.info(sql);
 				if (error) {
+					console.error(error);
 					reject(error);
 				} else {
+					console.info(results);
 					resolve(results.affectedRows > 0);
 				}
 			});
 		});
 	}
-
 	transformObjectKeys(obj, transformFunc) {
 		const transformedObj = {};
 		for (const [key, value] of Object.entries(obj)) {
@@ -120,27 +187,10 @@ class MysqlHandler {
 
 MysqlHandler.connection = mysql.createConnection({
 	host: 'localhost',
-	user: 'user',
-	password: 'password',
-	database: 'database'
+	user: 'root',
+	password: 'Password1!',
+	database: 'archimate'
 });
-function generateSqlSchema(classConstructor) {
-	const tableName = classConstructor.name.toLowerCase();
-	const columns = [];
-	for (const property of Object.getOwnPropertyNames(classConstructor.prototype)) {
-		if (property !== 'constructor' && typeof classConstructor.prototype[property] !== 'function') {
-			const snakeCaseName = camelToSnake(property);
-			const type = getTypeString(classConstructor.prototype[property]);
-			const columnDef = `${snakeCaseName} ${type}`;
-			columns.push(columnDef);
-		}
-	}
-	const columnsString = columns.join(', ');
-	const primaryKey = `${tableName}_id`;
-	const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (${primaryKey} INT AUTO_INCREMENT PRIMARY KEY, ${columnsString});`;
-	return sql;
-}
-
 
 function getTypeString(value) {
 	const type = typeof value;
@@ -157,8 +207,8 @@ function getTypeString(value) {
 			}
 			break;
 		default:
-			break;
+			return null;
 	}
-	throw new Error(`Unsupported data type: ${type}`);
 }
 
+module.exports = {MysqlHandler}

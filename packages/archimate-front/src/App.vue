@@ -4,7 +4,9 @@
 			<el-tab-pane v-for="layer in layers" :label="layer.name">
 				<el-tabs v-model="activeTab">
 					<el-tab-pane v-for="aClass in layer.classes" :key="aClass.name" :label="aClass.name">
-						<ArchimateComponent :api-url="apiUrl" :entity="aClass.classDef" :entity-name="aClass.name" :fields="aClass.fields"/>
+						<ArchimateComponent :api-url="apiUrl"
+											:context="aClass.context"
+											:entity="aClass.classDef" :entity-name="aClass.name" :fields="aClass.fields"/>
 					</el-tab-pane>
 				</el-tabs>
 			</el-tab-pane>
@@ -12,9 +14,26 @@
 	</div>
 </template>
 <script>
-import { ApplicationLayer, BusinessLayer, ImplementationLayer, MotivationLayer, StrategyLayer, TechnologyLayer} from "@exygen/archimate-model";
+// import { ApplicationLayer, BusinessLayer, ImplementationLayer, MotivationLayer, StrategyLayer, TechnologyLayer} from "@exygen/archimate-model";
+import * as ApplicationLayer from "./model/ApplicationLayer.js";
+import * as BusinessLayer from "./model/BusinessLayer.js";
+import * as ImplementationLayer from "./model/ImplementationLayer.js";
+import * as MotivationLayer from "./model/MotivationLayer.js";
+import * as StrategyLayer from "./model/StrategyLayer.js";
+import * as TechnologyLayer from "./model/TechnologyLayer.js";
 import ArchimateComponent from "./components/ArchimateComponent.vue";
 
+function camelToSnake(str) {
+	return str.replace(/[A-Z]/g, (letter, index) => {
+		return index === 0 ? letter.toLowerCase() : `_${letter.toLowerCase()}`;
+	});
+}
+
+function snakeToCamel(str) {
+	return str.replace(/([-_]\w)/g, function (match) {
+		return match[1].toUpperCase();
+	});
+}
 export default {
 	components: {
 		ArchimateComponent,
@@ -50,6 +69,7 @@ export default {
 				const obj = new classDef;
 				this.layers[layer].classes.push({
 					name: classDef.name,
+					context: camelToSnake(classDef.name),
 					classDef: classDef,
 					fields: Object.getOwnPropertyNames(obj)
 				});
