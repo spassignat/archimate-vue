@@ -1,20 +1,57 @@
-[
-  {
-	"entity":"ApplicationComponent",
-	"package": "Application",
-	"properties": [
-	  {
-		"name": "name",
-		"type": "string",
-		"array": false
-	  },
-	  {
-		"name": "implements",
-		"type": "BusinessFunction",
-		"array": true
-	  }
-
-	]
-  }
-
-]
+{
+  "entities":         [
+	{
+	  "name":       "ArchimateElement",
+	  "extends":    [
+	  ],
+	  "properties": [
+		{
+		  "name":    "properties",
+		  "type":    "Property",
+		  "isArray": true,
+		  "storage": "json"
+		}
+	  ]
+	},
+	{
+	  "name":       "Property",
+	  "extends":    [
+	  ],
+	  "properties": [
+		{
+		  "name":    "name",
+		  "type":    "string",
+		  "isArray": false
+		},
+		{
+		  "name":    "value",
+		  "type":    "string",
+		  "isArray": false
+		}
+	  ]
+	}
+  ],
+  "applicationLayer": [
+	{
+	  "name":       "ApplicationComponent",
+	  "extends":    [
+		"ArchimateElement"
+	  ],
+	  "properties": [
+		{
+		  "name":        "description",
+		  "type":        "text",
+		  "isArray":     false
+		}
+	  ],
+	  "links": [
+		{
+		  "name":        "realizes",
+		  "type":        "BusinessFunction",
+		  "isArray":     true,
+		  "association": "Realize"
+		}
+	  ]
+	}
+  ]
+}
