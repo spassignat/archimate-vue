@@ -1,23 +1,27 @@
 {
-  "name":            "@exygen/archimate-server",
-  "version":         "0.1.0",
-  "private":         true,
-  "scripts":         {
-	"build":     "babel src -d dist",
-	"server":    "node src/server.js"
+  "name": "@exygen/archimate-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "babel src -d dist",
+    "server": "node src/server.js"
   },
-  "dependencies":    {
-	"body-parser":             "",
-	"core-js":                 "",
-	"cors":                    "",
-	"express":                 "",
-	"mysql":                   "",
-	"uuid":                    ""
+  "dependencies": {
+    "body-parser": "",
+    "core-js": "",
+    "cors": "",
+    "express": "",
+    "js-logger": "^1.6.1",
+    "lodash": "^4.17.21",
+    "mysql": "",
+    "underscore": "^1.13.6",
+    "uuid": "",
+    "xml2js": "^0.5.0"
   },
   "devDependencies": {
-	"eslint":    "",
-	"babel":     "",
-	"babel-cli": "",
-	"jsdom":     ""
+    "babel": "",
+    "babel-cli": "",
+    "eslint": "",
+    "jsdom": ""
   }
 }

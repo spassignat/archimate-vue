@@ -1,59 +1,124 @@
 <template>
-	<div>
+	<el-container>
+		<el-aside width="200px">
+			<el-tree @node-click="handleNodeClick" :data="data" :props="defaultProps"/>
+		</el-aside>
 		<el-tabs>
-			<el-tab-pane v-for="layer in layers" :label="layer.name">
-				<el-tabs v-model="activeTab">
-					<el-tab-pane v-for="aClass in layer.classes" :key="aClass.name" :label="aClass.name">
-						<ArchimateComponent :api-url="apiUrl"
-											:context="aClass.context"
-											:entity="aClass.classDef" :entity-name="aClass.name" :fields="aClass.fields"/>
-					</el-tab-pane>
-				</el-tabs>
+			<el-tab-pane label="Data">
+
+				<ArchimateComponent v-if="aClass" :api-url="apiUrl" :context="this.camelToSnake(aClass.name)" :entity="aClass" :fields="aClass.fields" :link="aLink"/>
+			</el-tab-pane>
+			<el-tab-pane  label="Diagram">
+				<UML :uml="uml"></UML>
 			</el-tab-pane>
 		</el-tabs>
-	</div>
+	</el-container>
 </template>
 <script>
 // import { ApplicationLayer, BusinessLayer, ImplementationLayer, MotivationLayer, StrategyLayer, TechnologyLayer} from "@exygen/archimate-model";
-import * as ApplicationLayer from "./model/ApplicationLayer.js";
-import * as BusinessLayer from "./model/BusinessLayer.js";
-import * as ImplementationLayer from "./model/ImplementationLayer.js";
-import * as MotivationLayer from "./model/MotivationLayer.js";
-import * as StrategyLayer from "./model/StrategyLayer.js";
-import * as TechnologyLayer from "./model/TechnologyLayer.js";
 import ArchimateComponent from "./components/ArchimateComponent.vue";
+import axios from "axios";
+import _ from "lodash";
+import UML from "./components/UML.vue";
 
-function camelToSnake(str) {
-	return str.replace(/[A-Z]/g, (letter, index) => {
-		return index === 0 ? letter.toLowerCase() : `_${letter.toLowerCase()}`;
-	});
+function compareNode(a, b) {
+	return a.label.localeCompare(b.label);
 }
 
-function snakeToCamel(str) {
-	return str.replace(/([-_]\w)/g, function (match) {
-		return match[1].toUpperCase();
-	});
-}
 export default {
 	components: {
+		UML,
 		ArchimateComponent,
 	},
 	data() {
 		return {
-			activeTab: "ApplicationComponent",
+			uml: "@startuml\nbob -> sam\n@enduml",
+			model: {packages: []},
+			aClass: null,
+			aLink: null,
+			defaultProps: {
+				children: 'children',
+				label: 'label',
+			},
 			layers: {},
 			apiUrl: "http://localhost:3000/api"
 		};
 	},
 	created() {
-		this.groupClassesByLayer(ApplicationLayer, "Application")
-		this.groupClassesByLayer(BusinessLayer, "Business")
-		this.groupClassesByLayer(ImplementationLayer, "Implementation")
-		this.groupClassesByLayer(MotivationLayer, "Motivation")
-		this.groupClassesByLayer(StrategyLayer, "Strategy")
-		this.groupClassesByLayer(TechnologyLayer, "Technology")
+		axios.get(`${this.apiUrl}/`).then(response => {
+			this.model = response.data || {};
+		}).catch(err => {
+		}).finally(() => {
+		});
+		// this.groupClassesByLayer(ApplicationLayer, "Application")
+		// this.groupClassesByLayer(BusinessLayer, "Business")
+		// this.groupClassesByLayer(ImplementationLayer, "Implementation")
+		// this.groupClassesByLayer(MotivationLayer, "Motivation")
+		// this.groupClassesByLayer(StrategyLayer, "Strategy")
+		// this.groupClassesByLayer(TechnologyLayer, "Technology")
+	},
+	computed: {
+		data() {
+			return this.model.packages.map(p => {
+				return {
+					label: p.name,
+					type: 'Layer',
+					children: p.classes.map(c => {
+						return {
+							label: c.name,
+							type: 'Class',
+							aClass: c,
+							children: c.links.reduce((acc, v) => {
+								acc.push(v.relationship);
+								acc = _.uniqWith(acc, _.isEqual)
+								return acc;
+							}, []).map(a => {
+								return {
+									label: a,
+									type: "Relation",
+									aClass: c,
+									children: c.links.filter(l => l.relationship === a).map(l => {
+										return {
+											label: l.target.type,
+											type: 'Link',
+											aClass: c,
+											aLink: l
+										};
+									}).sort(compareNode)
+								};
+							}).sort(compareNode)
+						};
+					}).sort(compareNode)
+				};
+			}).sort(compareNode)
+		},
 	},
 	methods: {
+		handleNodeClick(node) {
+			console.log(node.type);
+			switch (node.type) {
+				case "Layer":
+					this.aClass = null;
+					this.aLink = null;
+					break;
+				case "Link":
+					this.aLink = node.aLink;
+				case "Relation":
+				case "Class":
+					this.aClass = node.aClass;
+					break;
+			}
+		},
+		snakeToCamel(str) {
+			return str.replace(/([-_]\w)/g, function (match) {
+				return match[1].toUpperCase();
+			});
+		},
+		camelToSnake(str) {
+			return str.replace(/[A-Z]/g, (letter, index) => {
+				return index === 0 ? letter.toLowerCase() : `_${letter.toLowerCase()}`;
+			});
+		},
 		groupClassesByLayer(acls, layer) {
 			let classList = Object.values(acls).filter((cls) => typeof cls === 'function')
 			// Parcours de toutes les classes et regroupement par couche
@@ -80,3 +145,29 @@ export default {
 	}
 };
 </script>
+<style>
+.el-container {
+	margin: 10px;
+//background: #a0cfff; border: solid #A0CFFF;
+}
+
+.el-main {
+	border: solid #B3E19D;
+	margin: 10px;
+}
+
+.el-header {
+	border: solid #FAB6B6;
+	margin: 10px;
+}
+
+.el-footer {
+	border: solid #FFFF00;
+	margin: 10px;
+}
+
+.aside {
+	border: solid #D9ECFF;
+	margin: 10px;
+}
+</style>

@@ -1,0 +1,263 @@
+{
+  "properties": [
+	{
+	  "name":    "id",
+	  "type":    "string",
+	  "form":    "input:text",
+	  "storage": "VARCHAR(64)",
+	  "disabled": true,
+	  "listed":  false
+	},
+	{
+	  "name":    "aspect",
+	  "type":    "string",
+	  "form":    "select",
+	  "storage": "VARCHAR(16)",
+	  "disabled": false,
+	  "options": [
+		"Passive",
+		"Behaviour",
+		"Active"
+	  ],
+	  "listed":  true
+	},
+	{
+	  "name":    "name",
+	  "type":    "string",
+	  "form":    "input:text",
+	  "disabled": false,
+	  "storage": "VARCHAR(32)",
+	  "listed":  true
+	},
+	{
+	  "name":    "description",
+	  "type":    "string",
+	  "disabled": false,
+	  "form":    "textarea",
+	  "storage": "VARCHAR(255)"
+	}
+  ],
+  "packages":   [
+	{
+	  "name":    "Business",
+	  "classes": [
+		{
+		  "name": "BusinessActor"
+		},
+		{
+		  "name": "BusinessRole"
+		},
+		{
+		  "name": "BusinessCollaboration"
+		},
+		{
+		  "name": "BusinessInterface"
+		},
+		{
+		  "name": "BusinessProcess"
+		},
+		{
+		  "name": "BusinessFunction"
+		},
+		{
+		  "name": "BusinessInteraction"
+		},
+		{
+		  "name": "BusinessEvent"
+		},
+		{
+		  "name": "BusinessService"
+		},
+		{
+		  "name": "BusinessObject"
+		},
+		{
+		  "name": "BusinessContract"
+		},
+		{
+		  "name": "BusinessRepresentation"
+		},
+		{
+		  "name": "BusinessProduct"
+		}
+	  ]
+	},
+	{
+	  "name":    "Strategy",
+	  "classes": [
+		{
+		  "name": "StrategyCapability"
+		},
+		{
+		  "name": "StrategyCourseOfAction"
+		},
+		{
+		  "name": "StrategyResource"
+		},
+		{
+		  "name": "StrategyValueStream"
+		}
+	  ]
+	},
+	{
+	  "name":    "Application",
+	  "classes": [
+		{
+		  "name": "ApplicationCollaboration"
+		},
+		{
+		  "name": "ApplicationEvent"
+		},
+		{
+		  "name": "ApplicationFunction"
+		},
+		{
+		  "name": "ApplicationInteraction"
+		},
+		{
+		  "name": "ApplicationProcess"
+		},
+		{
+		  "name": "ApplicationService"
+		},
+		{
+		  "name": "ApplicationDataObject"
+		},
+		{
+		  "name": "ApplicationComponent"
+		},
+		{
+		  "name": "ApplicationInterface"
+		}
+	  ]
+	},
+	{
+	  "name":    "Technology",
+	  "classes": [
+		{
+		  "name": "TechnologyArtifact"
+		},
+		{
+		  "name": "TechnologyCollaboration"
+		},
+		{
+		  "name": "TechnologyCommunicationNetwork"
+		},
+		{
+		  "name": "TechnologyDevice"
+		},
+		{
+		  "name": "TechnologyDistributionNetwork"
+		},
+		{
+		  "name": "TechnologyEquipment"
+		},
+		{
+		  "name": "TechnologyEvent"
+		},
+		{
+		  "name": "TechnologyFacility"
+		},
+		{
+		  "name": "TechnologyFunction"
+		},
+		{
+		  "name": "TechnologyInteraction"
+		},
+		{
+		  "name": "TechnologyInterface"
+		},
+		{
+		  "name": "TechnologyMaterial"
+		},
+		{
+		  "name": "TechnologyNode"
+		},
+		{
+		  "name": "TechnologyPath"
+		},
+		{
+		  "name": "TechnologyProcess"
+		},
+		{
+		  "name": "TechnologyService"
+		},
+		{
+		  "name": "TechnologySystemSoftware"
+		}
+	  ]
+	},
+	{
+	  "name":    "Motivation",
+	  "classes": [
+		{
+		  "name": "MotivationAssessment"
+		},
+		{
+		  "name": "MotivationConstraint"
+		},
+		{
+		  "name": "MotivationDriver"
+		},
+		{
+		  "name": "MotivationGoal"
+		},
+		{
+		  "name": "MotivationMeaning"
+		},
+		{
+		  "name": "MotivationOutcome"
+		},
+		{
+		  "name": "MotivationPrinciple"
+		},
+		{
+		  "name": "MotivationRequirement"
+		},
+		{
+		  "name": "MotivationStakeholder"
+		},
+		{
+		  "name": "MotivationValue"
+		}
+	  ]
+	},
+	{
+	  "name":    "Other",
+	  "classes": [
+		{
+		  "name": "OtherGrouping"
+		},
+		{
+		  "name": "OtherJunction"
+		},
+		{
+		  "name": "OtherLocation"
+		},
+		{
+		  "name": "OtherRelationship"
+		}
+	  ]
+	},
+	{
+	  "name":    "Implementation",
+	  "classes": [
+		{
+		  "name": "ImplementationDeliverable"
+		},
+		{
+		  "name": "ImplementationEvent"
+		},
+		{
+		  "name": "ImplementationGap"
+		},
+		{
+		  "name": "ImplementationPlateau"
+		},
+		{
+		  "name": "ImplementationWorkPackage"
+		}
+	  ]
+	}
+  ]
+}

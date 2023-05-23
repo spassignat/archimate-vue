@@ -1,57 +1,38 @@
 {
-  "entities":         [
-	{
-	  "name":       "ArchimateElement",
-	  "extends":    [
-	  ],
-	  "properties": [
-		{
-		  "name":    "properties",
-		  "type":    "Property",
-		  "isArray": true,
-		  "storage": "json"
-		}
-	  ]
-	},
-	{
-	  "name":       "Property",
-	  "extends":    [
-	  ],
-	  "properties": [
-		{
-		  "name":    "name",
-		  "type":    "string",
-		  "isArray": false
-		},
-		{
-		  "name":    "value",
-		  "type":    "string",
-		  "isArray": false
-		}
-	  ]
-	}
-  ],
-  "applicationLayer": [
-	{
-	  "name":       "ApplicationComponent",
-	  "extends":    [
-		"ArchimateElement"
-	  ],
-	  "properties": [
-		{
-		  "name":        "description",
-		  "type":        "text",
-		  "isArray":     false
-		}
-	  ],
-	  "links": [
-		{
-		  "name":        "realizes",
-		  "type":        "BusinessFunction",
-		  "isArray":     true,
-		  "association": "Realize"
-		}
-	  ]
-	}
-  ]
+  "packages": {
+	"name": "Application",
+	"entities": [
+	  {
+		"name":       "ApplicationComponent",
+		"properties": [
+		  {
+			"name":    "name",
+			"type":    "string",
+			"form":    "input:text",
+			"storage": "VARCHAR(32)"
+		  },
+		  {
+			"name":    "description",
+			"type":    "string",
+			"form":    "textarea",
+			"storage": "VARCHAR(255)"
+		  }
+		],
+		"links": [
+		  {
+			"name": "composed of",
+			"source": {
+			  "form": "select",
+			  "storage": "VARCHAR(32)"
+			},
+			"target": {
+			  "form": "select",
+			  "storage": "VARCHAR(32)",
+			  "options":"#all(/Application/ApplicationComponent):name"
+			},
+		  }
+		]
+	  }
+	]
+  }
 }

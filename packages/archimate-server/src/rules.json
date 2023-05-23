@@ -1,0 +1,44 @@
+{
+  "properties": [
+	{
+	  "name": "id",
+	  "type": "string",
+	  "form": "input:text",
+	  "storage": "VARCHAR(32)",
+	  "listed": true
+	},
+	{
+	  "name": "aspect",
+	  "type": "string",
+	  "form": "input:select",
+	  "storage": "VARCHAR(16)",
+	  "options": [
+		"Passive",
+		"Behaviour",
+		"Active"
+	  ],
+	  "listed": true
+	},
+	{
+	  "name": "name",
+	  "type": "string",
+	  "form": "input:text",
+	  "storage": "VARCHAR(32)",
+	  "listed": true
+	},
+	{
+	  "name": "description",
+	  "type": "string",
+	  "form": "textarea",
+	  "storage": "VARCHAR(255)"
+	}
+  ],
+
+  "rules": {
+	"class": {
+	  "properties": ["id","name","description"]
+	},
+	"Composition": ["self_"]
+  },
+
+}
